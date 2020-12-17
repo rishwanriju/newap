@@ -2,13 +2,15 @@ package main
 
 import (
 	"newsapp/controller"
+	"newsapp/db"
 	"newsapp/service"
 
 	"github.com/gin-gonic/gin"
 )
 
 var (
-	newsService    service.NewsService       = service.New()
+	newsRepository db.NewsRepository         = db.NewNewsRepository()
+	newsService    service.NewsService       = service.New(newsRepository)
 	newsController controller.NewsController = controller.New(newsService)
 )
 
@@ -25,5 +27,16 @@ func main() {
 
 		ctx.JSON(200, newsController.Save(ctx))
 	})
+
+	server.PUT("/news/:id", func(ctx *gin.Context) {
+
+		ctx.JSON(200, newsController.Update(ctx))
+	})
+
+	server.DELETE("/news/:id", func(ctx *gin.Context) {
+
+		ctx.JSON(200, newsController.Delete(ctx))
+	})
+
 	server.Run(":3000")
 }
